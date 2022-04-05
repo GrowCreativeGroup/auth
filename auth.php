@@ -187,61 +187,13 @@ class auth_plugin_saml extends auth_plugin_base {
             redirect($CFG->wwwroot.'/auth/saml/index.php?logout=1');
         }
 
-        try {
-            // In order to avoid session problems we first do the SAML issues and then
-            // we log in and register the attributes of user, but we need to read the value of the $CFG->dataroot.
-            $dataroot = null;
-            if (file_exists(dirname(dirname(__DIR__)).'/config.php')) {
-                $configcontent = file_get_contents(dirname(dirname(__DIR__)).'/config.php');
+        if (isset($this->config->samlhookfile) && $this->config->samlhookfile != '') {
+            require_once($CFG->dirroot.'/auth/saml/locallib.php');
+            include_once(resolve_samlhookfile($this->config->samlhookfile));
 
-                $matches = [];
-                if (preg_match('/\$CFG->dataroot\s*=\s*["\'](.+)["\'];/i', $configcontent, $matches)) {
-                    $dataroot = $matches[1];
-                }
+            if (function_exists('saml_hook_post_logoutpage_hook')) {
+                saml_hook_post_logoutpage_hook($this->config);
             }
-            // We read saml parameters from a config file instead from the database
-            // due we can not operate with the moodle database without load all
-            // moodle session issue.
-            if (isset($dataroot) && file_exists($dataroot.'/saml_config.php')) {
-                $contentfile = file_get_contents($dataroot.'/saml_config.php');
-            } else if (file_exists('saml_config.php')) {
-                $contentfile = file_get_contents('saml_config.php');
-            } else {
-                throw(new Exception('SAML config params are not set.'));
-            }
-
-            $samlparam = json_decode($contentfile);
-
-            if (!file_exists($samlparam->samllib.'/_autoload.php')) {
-                throw(new Exception('simpleSAMLphp lib loader file does not exist: '.$samlparam->samllib.'/_autoload.php'));
-            }
-
-            setcookie('SimpleSAMLSessionID', '', time() - HOURSECS, $CFG->sessioncookiepath, $CFG->sessioncookiedomain, $CFG->cookiesecure, true);
-            setcookie('SimpleSAMLAuthToken', '', time() - HOURSECS, $CFG->sessioncookiepath, $CFG->sessioncookiedomain, $CFG->cookiesecure, true);
-
-            include_once($samlparam->samllib.'/_autoload.php');
-            $as = new \SimpleSAML\Auth\Simple($samlparam->sp_source);
-            $urltogo = str_replace('https://staging.edu.', 'https://staging.', $CFG->wwwroot);
-            $urltogo = str_replace('https://edu.', 'https://app.', $urltogo);
-            $urltogo .= '/user';
-
-            set_moodle_cookie('nobody');
-            require_logout();
-
-            $as->isAuthenticated(); // Replaces our session with the SimpleSAMLphp one
-            \SimpleSAML\Session::getSessionFromRequest()->cleanup(); // Reverts to our PHP session
-
-            header('Location: '.$urltogo);
-            exit();
-            // $as->logout([
-            //     'ReturnTo' => $urltogo,
-            //     'ReturnStateParam' => 'LogoutState',
-            //     'ReturnStateStage' => 'MyLogoutState',
-            // ]);
-            // \SimpleSAML\Session::getSessionFromRequest()->cleanup();
-        } catch (Exception $e) {
-            session_write_close();
-            $err['login'] = $e->getMessage();
         }
     }
 
