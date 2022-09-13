@@ -58,7 +58,7 @@ try {
         throw(new Exception('simpleSAMLphp lib loader file does not exist: '.$samlparam->samllib.'/_autoload.php'));
     }
     include_once($samlparam->samllib.'/_autoload.php');
-    $as = new SimpleSAML_Auth_Simple($samlparam->sp_source);
+    $as = new \SimpleSAML\Auth\Simple($samlparam->sp_source);
 
     if (isset($_GET["logout"])) {
         if (isset($_SERVER['SCRIPT_URI'])) {
@@ -134,7 +134,7 @@ if (!$validsamlsession) {
     // Not valid session. Ship user off to Identity Provider.
     unset($USER);
     try {
-        $as = new SimpleSAML_Auth_Simple($samlparam->sp_source);
+        $as = new \SimpleSAML\Auth\Simple($samlparam->sp_source);
         $as->requireAuth();
     } catch (Exception $e) {
         $err['login'] = $e->getMessage();
