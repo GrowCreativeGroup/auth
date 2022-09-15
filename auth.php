@@ -167,6 +167,9 @@ class auth_plugin_saml extends auth_plugin_base {
         }
     }
 
+    /**
+     * Hook for login page.
+     */
     public function loginpage_hook() {
         global $CFG;
 
@@ -178,6 +181,9 @@ class auth_plugin_saml extends auth_plugin_base {
         $CFG->nolastloggedin = true;
     }
 
+    /**
+     * Hook for logout page.
+     */
     public function logoutpage_hook() {
         global $CFG;
 

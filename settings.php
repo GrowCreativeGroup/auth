@@ -123,6 +123,14 @@ if ($ADMIN->fulltree) {
 
     $settings->add($setting);
 
+    // Alternate logout URL.
+    $name = 'auth_saml/logout_return_url';
+    $title = get_string('auth_saml_logout_return_url', 'auth_saml');
+    $description = get_string('auth_saml_logout_return_url_description', 'auth_saml');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default, PARAM_URL);
+    $settings->add($setting);
+
     $name = 'auth_saml/samllogoimage';
     $title = get_string('auth_saml_logo_path', 'auth_saml');
     $description = get_string('auth_saml_logo_path_description', 'auth_saml');

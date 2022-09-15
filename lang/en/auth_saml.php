@@ -171,3 +171,6 @@ $string['auth_saml_hook_not_defined'] = "saml_hook_get_course_info method not de
 $string['auth_saml_check_mapping_duplicates'] = "Find course mapping duplicates";
 $string['auth_saml_dontdisplaytouser'] = "Don't display enrollment error message to user";
 $string['auth_saml_dontdisplaytouser_description'] = "By default, if a course/role/status provided by the IdP was not able to be mapped to a Moodle object, a warning message appers to the user. Enable this flag to prevent this";
+
+$string['auth_saml_logout_return_url'] = 'Alternate logout return URL';
+$string['auth_saml_logout_return_url_description'] = 'Provide the URL that SAML users shall be redirected to after logging out (if dosinglelogout is disabled).<br />If left empty, users will be redirected to the location that moodle will redirect users to';

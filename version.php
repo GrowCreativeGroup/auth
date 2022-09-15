@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2022091101;
+$plugin->version = 2022091501;
 $plugin->requires = 2017111300;
 $plugin->release = 'auth/saml version of 11-09-2022';
 $plugin->maturity = MATURITY_STABLE;
