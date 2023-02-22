@@ -171,10 +171,35 @@ class auth_plugin_saml extends auth_plugin_base {
      * Hook for login page.
      */
     public function loginpage_hook() {
-        global $CFG;
+        global $CFG, $SESSION, $DB;
 
         if (empty($CFG->alternateloginurl) && !(isset($_GET['saml']) && $_GET['saml'] === 'false')) {
-            $CFG->alternateloginurl = $CFG->wwwroot.'/auth/saml/login.php';
+            // Prevent SAML redirect is not in the URL.
+            $saml = ENROL_INSTANCE_ENABLED;
+            $referer = get_local_referer(false);
+            if ($_SERVER['REQUEST_METHOD'] === 'GET' || ($_SERVER['REQUEST_METHOD'] === 'POST'
+                && (strip_querystring($referer) != strip_querystring(qualified_me())))) {
+                if (isguestuser() || !isloggedin()) {
+                    $url = new moodle_url($referer);
+                    if ($courseid = $url->get_param('id')) {
+                        if (strpos($referer, '/mod/') !== false) {
+                            $courseid = $DB->get_field('course_modules', 'courseid', ['id' => $courseid]);
+                        }
+                        if ($courseid && $courseid !== SITEID) {
+                            $select = "courseid = ? AND enrol = ?";
+                            $guest = $DB->get_field_select('enrol', 'status', $select, [$courseid, 'guest']);
+                            $disabled = $DB->get_field_select('enrol', 'status', $select, [$courseid, 'saml']);
+                            if ($guest == ENROL_INSTANCE_ENABLED && $disabled == ENROL_INSTANCE_DISABLED) {
+                                $saml = ENROL_INSTANCE_DISABLED;
+                                $SESSION->wantsurl = $referer;
+                            }
+                        }
+                    }
+                }
+            }
+            if ($saml === ENROL_INSTANCE_ENABLED) {
+                $CFG->alternateloginurl = $CFG->wwwroot.'/auth/saml/login.php';
+            }
         }
 
         // Prevent username from being shown on login page after logout.
