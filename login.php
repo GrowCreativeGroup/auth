@@ -53,7 +53,7 @@ $PAGE->set_pagelayout('login');
 // Define variables used in page.
 $site = get_site();
 
-if (!empty($CFG->registerauth) or is_enabled_auth('none') or !empty($CFG->auth_instructions)) {
+if (!empty($CFG->registerauth) || is_enabled_auth('none') || !empty($CFG->auth_instructions)) {
     $showinstructions = true;
 } else {
     $showinstructions = false;
@@ -73,7 +73,7 @@ if ($showinstructions) {
     $columns = 'onecolumn';
 }
 
-if (empty($CFG->xmlstrictheaders) and !empty($CFG->loginpasswordautocomplete)) {
+if (empty($CFG->xmlstrictheaders) && !empty($CFG->loginpasswordautocomplete)) {
     $autocomplete = 'autocomplete="off"';
 } else {
     $autocomplete = '';
@@ -143,7 +143,7 @@ echo '</center>';
           </div>
             <div class="clearer"><!-- --></div>
             <?php
-            if (isset($CFG->rememberusername) and $CFG->rememberusername == 2) {
+            if (isset($CFG->rememberusername) && $CFG->rememberusername == 2) {
             ?>
               <div class="rememberpass">
                   <input type="checkbox" name="rememberusername" id="rememberusername"
@@ -154,32 +154,9 @@ echo '</center>';
             }
             ?>
           <div class="clearer"><!-- --></div>
-          <div class="forgetpass">
-            <a href="<?php echo $CFG->httpswwwroot; ?>/login/forgot_password.php">
-                <?php print_string("forgotten") ?>
-            </a>
-          </div>
+          <div class="forgetpass"><!-- --></div>
         </form>
       </div>
-
-<?php
-if ($CFG->guestloginbutton and !isguestuser()) {
-?>
-      <div class="subcontent guestsub">
-        <div class="desc">
-        <?php print_string("someallowguest") ?>
-        </div>
-        <form action="<?php echo $CFG->httpswwwroot; ?>/login/index.php" method="post" id="guestlogin">
-          <div class="guestform">
-            <input type="hidden" name="username" value="guest" />
-            <input type="hidden" name="password" value="guest" />
-            <input type="submit" value="<?php print_string("loginguest") ?>" />
-          </div>
-        </form>
-      </div>
-<?php
-}
-?>
      </div>
 <?php
 if ($showinstructions) {
